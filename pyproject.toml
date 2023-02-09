@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "5-bot-venv"
+version = "0.1.0"
+description = ""
+authors = ["bertramvays <bertramvays@gmail.com>"]
+readme = "README.md"
+packages = [{include = "5_bot_venv"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+python-telegram-bot = "^20.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
