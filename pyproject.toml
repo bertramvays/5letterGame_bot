@@ -9,6 +9,7 @@ packages = [{include = "5_bot_venv"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 python-telegram-bot = "^20.0"
+pydantic = "^1.10.4"
 
 
 [build-system]
