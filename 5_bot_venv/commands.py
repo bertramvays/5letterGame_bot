@@ -1,5 +1,22 @@
-from telegram import KeyboardButton, ReplyKeyboardMarkup
+from telegram import BotCommand, Bot, BotCommandScopeDefault
 
-commands = ['start', 'help', 'clear', 'words']
-button_list = [[KeyboardButton(comm)] for comm in commands]
-reply_markup = ReplyKeyboardMarkup(button_list)
+
+
+commands = [
+        BotCommand(
+            command='start',
+            description='Начало работы'
+        ),
+        BotCommand(
+            command='help',
+            description='Инструкция'
+        ),
+        BotCommand(
+            command='clear',
+            description='Очистить введенные буквы'
+        ),
+        BotCommand(
+            command='words',
+            description='Доступные слова'
+        ),
+    ]
