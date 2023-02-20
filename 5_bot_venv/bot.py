@@ -36,9 +36,6 @@ def letter_position_filter(word):
     # func that filter words in according
     bool_filter_list = []  # список значений проверки позиций букв в слове, с двумя списками выше.
     for let in known_position:
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """func witch runs when /start command pressed"""
-    await context.bot.set_my_commands(commands=commands)  # меню команд
         if int(let[1]) == word.find(let[0]) + 1:
             bool_filter_list.append(True)
         else:
