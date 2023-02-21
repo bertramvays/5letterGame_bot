@@ -12,7 +12,7 @@ commands = [
             description='Инструкция'
         ),
         BotCommand(
-            command='clear',
+            command='clear_input',
             description='Очистить введенные буквы'
         ),
         BotCommand(
