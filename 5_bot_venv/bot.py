@@ -30,19 +30,33 @@ def _no(word):
 
 def letter_position_filter(word):
     # func that filter words in according
-    bool_filter_list = []  # список значений проверки позиций букв в слове, с двумя списками выше.
+    letter_list = list(word)
+    bool_filter_list = []  # список значений проверки позиций букв в слове.
+    print('letter_list', letter_list)
     for let in known_position:
-        if int(let[1]) == word.find(let[0]) + 1:
-            bool_filter_list.append(True)
-        else:
+        kn_indexes_of_letters =  [i + 1 for i, v in enumerate(letter_list) if let[0] == v]  #индексы встречающихся букв
+        if len(kn_indexes_of_letters) == 0:
             bool_filter_list.append(False)
+        else:
+            for i in kn_indexes_of_letters:
+                if letter_list[int(let[1]) - 1] == let[0]:
+                    bool_filter_list.append(True)
+                else:
+                    bool_filter_list.append(False)
     for let in unknown_position:
-        if int(let[1]) == word.find(let[0]) + 1:
+        unk_indexes_of_letters = [i for i, v in enumerate(letter_list) if let[0] == v]
+
+        if len(unk_indexes_of_letters) == 0:
             bool_filter_list.append(False)
-        elif word.find(let[0]) == -1:
-            bool_filter_list.append(False)
+            print("unk_indexes_of_letters", unk_indexes_of_letters, 'let', let, "False")
         else:
-            bool_filter_list.append(True)
+            for i in unk_indexes_of_letters:
+                if letter_list[i - 1] == let[0]:
+                    bool_filter_list.append(False)
+                    print("unk_indexes_of_letters", unk_indexes_of_letters, 'let', let, "False")
+                else:
+                    bool_filter_list.append(True)
+                    print("unk_indexes_of_letters", unk_indexes_of_letters, 'let', let, "True")
     return all(bool_filter_list)
 
 
