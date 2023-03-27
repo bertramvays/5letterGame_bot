@@ -15,11 +15,28 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 fh.setFormatter(formatter)
 log.addHandler(fh)
 
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    #функция которая запускается при вводе команды /start
+    context.user_data['letters_no'] = []  # буквы которых нет
+    context.user_data["known_position"] = []  # буква и её известная позиция
+    context.user_data['unknown_position'] = []  # список букв с позициями, на которых их точно нет.
+    await context.bot.set_my_commands(commands=commands)  # меню команд
+    await context.bot.send_message(chat_id=update.effective_chat.id,
+                                   text=("Отправьте боту известные буквы и их позиции. \n\n"
+                                         "Если известна <b>правильная позиция</b>,"
+                                         " тогда через плюс '+' (напр.: <b>ф+1</b> значит, что буква 'а' на первом месте),"
+                                         " если известна <b>неправильная позиция</b>, тогда через минус '-' "
+                                         "(напр.: <b>я-5</b> значит, что буква 'я' есть в слове и она точно не на 5 месте).\n\n"
+                                         "Если <b>буквы нет</b> ставите два минуса (напр.: <b>ц--</b>).\n\n"
+                                         "Чтобы увидеть список слов введите /words, или воспользуйтесь MENU.\n\n"
+                                         "Если Вы ошиблись при вводе, нажмите /clear_input, и попробуйте снова."),
+                                   parse_mode='HTML')
+
 
 # TODO слово для проверки скука
 
 def extract_words(file):
-    # функция которая получает список слов из файла. Один раз при старте бота.
+    # функция которая получает список слов из файла. Один раз при запуске бота.
     words = []
     with open(file, 'r', encoding='utf-8') as f:
         for line in f:
@@ -29,7 +46,7 @@ def extract_words(file):
 
 
 def _no(word, letters_no):
-    # func that filter words that have not letters
+    # ф-я пропускает слова по списку букв которых нет в слове
     if len(letters_no) == 0:
         return True
     else:
@@ -37,7 +54,7 @@ def _no(word, letters_no):
 
 
 def letter_position_filter(word, known_position, unknown_position):
-    # func that filter words in according
+    # ф-я пропускает слова по спискам известных позиций и неизвестных
     letter_list = list(word)
     bool_filter_list = []  # список значений проверки позиций букв в слове.
     for let in known_position:
@@ -56,16 +73,15 @@ def letter_position_filter(word, known_position, unknown_position):
             bool_filter_list.append(False)
         else:
             for i in unk_indexes_of_letters:
-                if letter_list[i - 1] == let[0]:
+                if i + 1 == int(let[1]):
                     bool_filter_list.append(False)
-                    print("unk_indexes_of_letters", unk_indexes_of_letters, 'let', let, "False")
                 else:
                     bool_filter_list.append(True)
     return all(bool_filter_list)
 
 
 async def filter_words(update: Update, context: ContextTypes.DEFAULT_TYPE, n=250):
-    print(context.user_data)
+    # ф-я применяет фильтры для вывода слов
     result = []
     for w in words:
         if _no(w, context.user_data['letters_no']):
@@ -81,30 +97,12 @@ async def filter_words(update: Update, context: ContextTypes.DEFAULT_TYPE, n=250
                                        text=message)
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """func witch runs when /start command pressed"""
-    context.user_data['letters_no'] = []  # буквы которых нет
-    context.user_data["known_position"] = []  # буква и её известная позиция
-    context.user_data['unknown_position'] = []  # список букв с позициями, на которых их точно нет.
-    await context.bot.set_my_commands(commands=commands)  # меню команд
-    await context.bot.send_message(chat_id=update.effective_chat.id,
-                                   text=("Отправьте боту известные буквы и их позиции. \n\n"
-                                         "Если известна <b>правильная позиция</b>,"
-                                         " тогда через плюс '+' (напр.: <b>ф+1</b> значит, что буква 'а' на первом месте),"
-                                         " если известна <b>неправильная позиция</b>, тогда через минус '-' "
-                                         "(напр.: <b>я-5</b> значит, что буква 'я' есть в слове и она точно не на 5 месте).\n\n"
-                                         "Если <b>буквы нет</b> ставите два минуса (напр.: <b>ц--</b>).\n\n"
-                                         "Чтобы увидеть список слов введите /words, или воспользуйтесь MENU.\n\n"
-                                         "Если Вы ошиблись при вводе, нажмите /clear_input, и попробуйте снова."),
-                                   parse_mode='HTML')
-
-
 async def input_letter_pos(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # функция, которая принимает пользовательский ввод и сортирует его в соответствующие списки
     wrong_input_message = "Некорректный ввод. Прочитайте инструкцию и попробуйте снова."
     try:
         take_letter_position = update.message.text
-        log.info(f'Пользователь ввел: {take_letter_position}')
+        log.info(f'Пользователь - {update.effective_user.id} ввел: {take_letter_position}')
         letter_position = list(take_letter_position)
         for i in letter_position:
             if i == ' ':
@@ -126,12 +124,14 @@ async def input_letter_pos(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await context.bot.send_message(chat_id=update.effective_chat.id,
                                            text=wrong_input_message)
     except Exception as exc:
-        log.exception(f'Ошибка ввода пользователя {exc}, ввод {take_letter_position}')
+        log.exception(f'Ошибка ввода пользователя {exc}, ввод {take_letter_position}, '
+                      f'пользователь {update.effective_user.id}')
         await context.bot.send_message(chat_id=update.effective_chat.id,
                                        text=wrong_input_message)
 
 
 async def clear_input(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # очистка ввода пользователя
     context.user_data['letters_no'].clear()
     context.user_data["known_position"].clear()
     context.user_data["unknown_position"].clear()
