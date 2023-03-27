@@ -33,6 +33,26 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                    parse_mode='HTML')
 
 
+async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    no_let_string = ', '.join(context.user_data['letters_no'])
+    kn_let_string = '; '.join([f'<b>{tup[0]}</b> на {tup[1]} позиции' for tup in context.user_data['known_position']])
+    unkn_let_string = '; '.join([f'<b>{tup[0]}</b> не на {tup[1]} позиции' for tup in context.user_data['unknown_position']])
+    await context.bot.send_message(chat_id=update.effective_chat.id,
+                                   text=("Отправьте боту известные буквы и их позиции. \n\n"
+                                         "Если известна <b>правильная позиция</b>,"
+                                         " тогда через плюс '+' (напр.: <b>ф+1</b> значит, что буква 'ф' на первом месте),"
+                                         " если известна <b>неправильная позиция</b>, тогда через минус '-' "
+                                         "(напр.: <b>я-5</b> значит, что буква 'я' есть в слове и она точно не на 5 месте).\n\n"
+                                         "Если <b>буквы нет</b> ставите два минуса (напр.: <b>ц--</b>).\n\n"
+                                         "Чтобы увидеть список слов введите /words, или воспользуйтесь MENU.\n\n"
+                                         "Если Вы ошиблись при вводе, нажмите /clear_input, и попробуйте снова." +
+                                         "\n\n На данный момент вы ввели:"
+                                         f"\n\t - Буквы которых нет:\n\t\t {no_let_string}"
+                                         f"\n\t - Известные буквы на известных позициях:\n\t\t  {kn_let_string}"
+                                         f"\n\t - Буква точно есть, но пока не известно где:\n\t\t {unkn_let_string}"),
+                                   parse_mode='HTML')
+
+
 # TODO слово для проверки скука
 
 def extract_words(file):
@@ -142,8 +162,10 @@ async def clear_input(update: Update, context: ContextTypes.DEFAULT_TYPE):
 if __name__ == '__main__':
     application = ApplicationBuilder().token(BOT_TOKEN).build()
     words = extract_words(FILE)
-    start_handler = CommandHandler(['start', 'help', ], start)
+    start_handler = CommandHandler(['start', ], start)
     application.add_handler(start_handler)
+    help_handler = CommandHandler(['help', ], help)
+    application.add_handler(help_handler)
     show_words_handler = CommandHandler(['words', ], filter_words)
     application.add_handler(show_words_handler)
     clear_handler = CommandHandler('clear_input', clear_input)
