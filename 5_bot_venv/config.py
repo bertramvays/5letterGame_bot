@@ -4,6 +4,7 @@ FILE = '5_words.txt'
 
 class Settings(BaseSettings):
     bot_token:SecretStr
+    admin_id:str
 
     class Config:
         env_file = '.env'

@@ -1,12 +1,13 @@
 import logging
 
 from telegram import Update
-from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
+from telegram.ext import ApplicationBuilder, Application, ContextTypes, CommandHandler, MessageHandler, filters
 
 from commands import commands
 from config import config, FILE
 
 BOT_TOKEN = config.bot_token.get_secret_value()
+ADMIN_ID = config.admin_id
 
 log = logging.getLogger('main_logger')
 log.setLevel(logging.INFO)
@@ -14,6 +15,16 @@ fh = logging.FileHandler('main.log', 'a+', 'utf-8')
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 fh.setFormatter(formatter)
 log.addHandler(fh)
+
+async def post_start(appliсation: Application):
+    # функция отправляет сообщение админу при запуске бота.
+    await appliсation.bot.send_message(chat_id=ADMIN_ID,
+                                   text="БОТ ЗАПУЩЕН!")
+
+async def post_shutdown(appliсation: Application):
+    # функция отправляет сообщение админу при запуске бота.
+    await appliсation.bot.send_message(chat_id=ADMIN_ID,
+                                   text="БОТ ОСТАНОВЛЕН!")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     #функция которая запускается при вводе команды /start
@@ -53,7 +64,9 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                    parse_mode='HTML')
 
 
-# TODO слово для проверки скука
+# TODO Разнести бота по модулям
+# TODO сделать тестирование. слово для проверки скука
+
 
 def extract_words(file):
     # функция которая получает список слов из файла. Один раз при запуске бота.
@@ -160,7 +173,7 @@ async def clear_input(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 if __name__ == '__main__':
-    application = ApplicationBuilder().token(BOT_TOKEN).build()
+    application = ApplicationBuilder().token(BOT_TOKEN).post_init(post_start).post_stop(post_shutdown).build()
     words = extract_words(FILE)
     start_handler = CommandHandler(['start', ], start)
     application.add_handler(start_handler)
