@@ -16,18 +16,21 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 fh.setFormatter(formatter)
 log.addHandler(fh)
 
+
 async def post_start(appliсation: Application):
     # функция отправляет сообщение админу при запуске бота.
     await appliсation.bot.send_message(chat_id=ADMIN_ID,
-                                   text="БОТ ЗАПУЩЕН!")
+                                       text="БОТ ЗАПУЩЕН!")
+
 
 async def post_shutdown(appliсation: Application):
     # функция отправляет сообщение админу при запуске бота.
     await appliсation.bot.send_message(chat_id=ADMIN_ID,
-                                   text="БОТ ОСТАНОВЛЕН!")
+                                       text="БОТ ОСТАНОВЛЕН!")
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    #функция которая запускается при вводе команды /start
+    # функция которая запускается при вводе команды /start
     context.user_data['letters_no'] = []  # буквы которых нет
     context.user_data["known_position"] = []  # буква и её известная позиция
     context.user_data['unknown_position'] = []  # список букв с позициями, на которых их точно нет.
@@ -47,7 +50,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
     no_let_string = ', '.join(context.user_data['letters_no'])
     kn_let_string = '; '.join([f'<b>{tup[0]}</b> на {tup[1]} позиции' for tup in context.user_data['known_position']])
-    unkn_let_string = '; '.join([f'<b>{tup[0]}</b> не на {tup[1]} позиции' for tup in context.user_data['unknown_position']])
+    unkn_let_string = '; '.join(
+        [f'<b>{tup[0]}</b> не на {tup[1]} позиции' for tup in context.user_data['unknown_position']])
     await context.bot.send_message(chat_id=update.effective_chat.id,
                                    text=("Отправьте боту известные буквы и их позиции. \n\n"
                                          "Если известна <b>правильная позиция</b>,"
@@ -62,10 +66,6 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                          f"\n\t - Известные буквы на известных позициях:\n\t\t  {kn_let_string}"
                                          f"\n\t - Буква точно есть, но пока не известно где:\n\t\t {unkn_let_string}"),
                                    parse_mode='HTML')
-
-
-# TODO Разнести бота по модулям
-# TODO сделать тестирование. слово для проверки скука
 
 
 def extract_words(file):
