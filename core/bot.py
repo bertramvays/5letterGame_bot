@@ -1,32 +1,23 @@
-import logging
 from telegram.ext import ApplicationBuilder, Application, CommandHandler, MessageHandler, filters
+from configs.config_bot import config
 from handlers.basics import get_start, get_help
 from handlers.user_input import input_letter_pos
 from handlers.words_utils import clear_input, filter_words
-from config import config
 from service_messages import *
 
 BOT_TOKEN = config.bot_token.get_secret_value()
 ADMIN_ID = config.admin_id
 
 
-log = logging.getLogger('main_logger')
-log.setLevel(logging.INFO)
-fh = logging.FileHandler('main.log', 'a+', 'utf-8')
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-fh.setFormatter(formatter)
-log.addHandler(fh)
-
-
-async def post_start(appliсation: Application):
+async def post_start(application: Application):
     # функция отправляет сообщение админу при запуске бота.
-    await appliсation.bot.send_message(chat_id=ADMIN_ID,
+    await application.bot.send_message(chat_id=ADMIN_ID,
                                        text=bot_startup_msg)
 
 
-async def post_shutdown(appliсation: Application):
+async def post_shutdown(application: Application):
     # функция отправляет сообщение админу при запуске бота.
-    await appliсation.bot.send_message(chat_id=ADMIN_ID,
+    await application.bot.send_message(chat_id=ADMIN_ID,
                                        text=bot_shutdown_msg)
 
 

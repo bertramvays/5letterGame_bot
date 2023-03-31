@@ -1,6 +1,8 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from service_messages import *
+from configs.config_log import logMain
+
 
 async def input_letter_pos(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # функция, которая принимает пользовательский ввод и сортирует его в соответствующие списки"
@@ -28,7 +30,7 @@ async def input_letter_pos(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await context.bot.send_message(chat_id=update.effective_chat.id,
                                            text=wrong_input_msg)
     except Exception as exc:
-        # log.exception(f'Ошибка ввода пользователя {exc}, ввод {take_letter_position}, '
-        #               f'пользователь {update.effective_user.id}')
+        logMain.exception(f'Ошибка ввода пользователя {exc}, ввод {take_letter_position}, '
+                          f'пользователь {update.effective_user.id}')
         await context.bot.send_message(chat_id=update.effective_chat.id,
                                        text=wrong_input_msg)

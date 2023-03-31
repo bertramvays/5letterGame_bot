@@ -1,5 +1,5 @@
 def no(word, letters_no):
-    # ф-я пропускает слова по списку букв которых нет в слове
+    # Функция пропускает слова по списку букв которых нет в слове
     if len(letters_no) == 0:
         return True
     else:
@@ -7,7 +7,7 @@ def no(word, letters_no):
 
 
 def letter_position_filter(word, known_position, unknown_position):
-    # ф-я пропускает слова по спискам известных позиций и неизвестных
+    # Функция пропускает слова по спискам известных позиций и неизвестных
     letter_list = list(word)
     bool_filter_list = []  # список значений проверки позиций букв в слове.
     for let in known_position:
