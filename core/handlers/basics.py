@@ -10,6 +10,7 @@ async def get_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data['letters_no'] = []  # буквы которых нет
     context.user_data["known_position"] = []  # буква и её известная позиция
     context.user_data['unknown_position'] = []  # список букв с позициями, на которых их точно нет.
+    context.bot_data[update.effective_user.id] = update.effective_user
     logCommands.info(f' Пользователь {update.effective_user.id} нажал /start')
     await context.bot.set_my_commands(commands=commands)  # меню команд
     await context.bot.send_message(chat_id=update.effective_chat.id,

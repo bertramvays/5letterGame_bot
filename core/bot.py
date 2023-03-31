@@ -4,6 +4,7 @@ from handlers.basics import get_start, get_help
 from handlers.user_input import input_letter_pos
 from handlers.words_utils import clear_input, filter_words
 from service_messages import *
+import csv
 
 BOT_TOKEN = config.bot_token.get_secret_value()
 ADMIN_ID = config.admin_id
@@ -17,6 +18,10 @@ async def post_start(application: Application):
 
 async def post_shutdown(application: Application):
     # функция отправляет сообщение админу при запуске бота.
+    with open('bot_users.csv', 'a+') as f:
+        w = csv.writer(f)
+        w.writerow(application.bot_data.keys())
+        w.writerow(application.bot_data.values())
     await application.bot.send_message(chat_id=ADMIN_ID,
                                        text=bot_shutdown_msg)
 
